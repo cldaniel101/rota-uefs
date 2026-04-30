@@ -1,16 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Navigation } from "@/components/landing/navigation";
 import { FooterSection } from "@/components/landing/footer-section";
-import { Button } from "@/components/ui/button";
 import { RoleHeader } from "@/components/shared/role-header";
-import { DevModeBar } from "@/components/shared/dev-mode-bar";
 import { WeekDaysMenu } from "@/components/shared/week-days-menu";
 import { CurrentDayHeader } from "@/components/shared/current-day-header";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { TripRouteHeader } from "@/entities/viagem/ui/TripRouteHeader";
 import { PassengerListInfo } from "@/entities/viagem/ui/PassengerListInfo";
 import { GuestSubscribeButton } from "@/features/inscrever-convidado/ui/GuestSubscribeButton";
@@ -20,19 +15,7 @@ import { ManageSubscriptionButton } from "@/features/gerenciar-inscricao/ui/Mana
 import { TripModeToggle } from "@/entities/viagem/ui/TripModeToggle";
 import { SubscribeButton } from "@/features/inscrever-rota/ui/SubscribeButton";
 
-import {
-  MapPin,
-  Bus,
-  User,
-  Ticket,
-  CircleDot,
-  GraduationCap,
-  UserPlus,
-  X,
-  UserCircle,
-  ShieldAlert,
-  Users
-} from "lucide-react";
+import { GraduationCap } from "lucide-react";
 
 const VIAGENS_REQUISITOS = [
   { id: "1", dia: "segunda", origem: "Salvador", destino: "Feira de Santana", horarioInicio: "06:00", horarioFim: "08:00", inscritosAlunos: 15, inscritosProfessores: 3, vagasTotais: 44, jaInscrito: false },
@@ -56,7 +39,6 @@ const DIAS_SEMANA = [
 ];
 
 export default function PaginaProfessor() {
-  const router = useRouter();
   const [diaAtivo, setDiaAtivo] = useState("segunda");
   const diaAtual = DIAS_SEMANA.find((d) => d.id === diaAtivo);
   const [modalConvidado, setModalConvidado] = useState<string | null>(null);
@@ -126,7 +108,6 @@ export default function PaginaProfessor() {
           onClose={() => setModalConvidado(null)} 
         />
 
-      <DevModeBar />
       <FooterSection />
     </div>
   );

@@ -3,12 +3,10 @@
 import type { ReactNode } from "react";
 import { Navigation } from "@/components/landing/navigation";
 import { FooterSection } from "@/components/landing/footer-section";
-import { DevModeBar } from "@/components/shared/dev-mode-bar";
 
 type AdminPageLayoutProps = {
   children: ReactNode;
   variant?: "dashboard" | "subpage";
-  showDevBar?: boolean;
   mainClassName?: string;
 };
 
@@ -21,7 +19,6 @@ const mainSubpage =
 export function AdminPageLayout({
   children,
   variant = "subpage",
-  showDevBar = false,
   mainClassName,
 }: AdminPageLayoutProps) {
   const shellClass =
@@ -36,7 +33,6 @@ export function AdminPageLayout({
         {children}
       </main>
       <FooterSection />
-      {showDevBar ? <DevModeBar /> : null}
     </div>
   );
 }

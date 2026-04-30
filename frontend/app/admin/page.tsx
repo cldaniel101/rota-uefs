@@ -88,7 +88,7 @@ export default function PaginaAdmin() {
   };
 
   return (
-    <AdminPageLayout variant="dashboard" showDevBar>
+    <AdminPageLayout variant="dashboard">
       <AdminHeader onNovoOnibus={() => abrirTelaCadastro()} />
 
       <AdminMetrics

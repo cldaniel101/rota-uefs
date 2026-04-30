@@ -9,14 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import {
-  ArrowLeft,
-  Bus,
-  Plus,
-  Save,
-  ShieldAlert,
-  UserCircle,
-} from "lucide-react";
+import { ArrowLeft, Bus, Plus, Save } from "lucide-react";
 import { adminService, type CadastroOnibusPayload } from "@/services/adminService";
 
 interface OnibusFormState {
@@ -289,39 +282,6 @@ function CadastroEdicaoOnibusForm() {
         </form>
       </main>
 
-
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#103173] text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-6 z-50 border-2 border-[#F2D022]/30 backdrop-blur-md">
-        <div className="flex flex-col border-r border-white/20 pr-4">
-          <span className="text-[9px] font-black uppercase text-[#F2D022] tracking-tighter">Modo de Teste</span>
-          <span className="text-xs font-bold">Alternar Perfil</span>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="ghost"
-            className="hover:bg-white/10 text-white gap-2 font-bold"
-            onClick={() => router.push("/passageiro")}
-          >
-            <UserCircle className="h-4 w-4" /> Passageiro
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="hover:bg-[#F2D022] hover:text-[#103173] text-white gap-2 font-bold transition-colors"
-            onClick={() => router.push("/motorista")}
-          >
-            <Bus className="h-4 w-4" /> Motorista
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="bg-red-500 text-white gap-2 font-bold transition-colors shadow-lg shadow-red-500/20"
-            onClick={() => router.push("/admin")}
-          >
-            <ShieldAlert className="h-4 w-4" /> Admin
-          </Button>
-        </div>
-      </div>
       <FooterSection />
     </div>
   );
