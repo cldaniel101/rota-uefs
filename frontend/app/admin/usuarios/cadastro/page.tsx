@@ -146,7 +146,7 @@ export default function CadastroAdminPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f0f4f8]">
-      <Navigation tipoUsuario="admin" />
+      <Navigation tipoUsuario="Admin" />
 
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 pt-6 pb-32">
         <button

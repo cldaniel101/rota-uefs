@@ -98,7 +98,7 @@ useEffect(() => {
   return (
     <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Carregando...</div>}>
       <div className="flex flex-col min-h-screen bg-[#f0f4f8]">
-      <Navigation tipoUsuario="admin" />
+      <Navigation tipoUsuario="Admin" />
 
       <main className="flex-1 max-w-3xl mx-auto w-full px-4 pt-6 pb-32">
         <button 
