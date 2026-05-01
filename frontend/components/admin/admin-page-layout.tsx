@@ -23,7 +23,7 @@ export function AdminPageLayout({
 }: AdminPageLayoutProps) {
   const shellClass =
     variant === "dashboard"
-      ? "flex min-h-screen flex-col bg-slate-50 font-sans pb-24 text-slate-900"
+      ? "flex min-h-screen flex-col bg-slate-50 font-sans text-slate-900"
       : "flex flex-col min-h-screen bg-[#f0f4f8]";
 
   return (
