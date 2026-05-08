@@ -3,6 +3,7 @@ from app.utils.utils import generate_registration_code
 import logging
 from app.repositories.reservation_repository import ReservationRepository
 from app.core.exceptions import NotFoundException, UnauthorizedException
+from app.DTOs.checkin import ManualCheckinRequestDTO
 import hmac
 
 logger = logging.getLogger(__name__)
@@ -36,4 +37,20 @@ class ReservationService:
 
         logger.info(f"Checkin successful | Reservation ID: {reservation_id}")
         return {"message": "Checkin realizado com sucesso"}
+    
+    async def manual_checkin(self, data: ManualCheckinRequestDTO):
+        logger.info(f"Manual Checkin requested | Reservation: {data.reservation_id}")
+
+        reservation = await self.repository.get_by_id(uuid.UUID(data.reservation_id))
+
+        if not reservation:
+            raise NotFoundException("Reserva não encontrada")
+        
+        if not (data.reservation_id == reservation.reservation_id and data.trip_id == reservation.trip_id and data.user_id == reservation.user.user_id):
+            raise UnauthorizedException("Código de verificação inválido")
+
+        await self.repository.update_boarding(reservation)
+
+        logger.info(f"Checkin successful | Reservation ID: {data.reservation_id}")
+        return {"message": "Checkin manual realizado com sucesso"}
             
