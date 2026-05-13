@@ -28,7 +28,7 @@ class PriorityEngine:
 
         return sorted(
             reservations,
-            key=lambda r: (self.get_priority(r.user.profile), r.reservation_timestamp)
+            key=lambda r: (self.get_priority(r.user.profile), r.reservation_timestamp, r.user_id)
         )
     
     async def get_all_users_with_reservation_by_trip_id(self, trip_id: str):
