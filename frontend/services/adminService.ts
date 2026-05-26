@@ -94,6 +94,37 @@ export interface ViagemAdmin {
   route_name: string;
   boarding_point: string;
   drop_off_point: string;
+  total_reservations?: number;
+  total_checkins?: number;
+  teachers_count?: number;
+  students_count?: number;
+}
+
+export interface PassageiroRelatorio {
+  reservation_id: string;
+  user_id: string;
+  name: string;
+  profile: string;
+  is_invited: boolean;
+  onboard: boolean;
+  timestamp: string;
+}
+
+export interface EstatisticasPassageirosRelatorio {
+  capacity: number;
+  total_onboarded?: number;
+  total_reservations: number;
+  waitlist_count: number;
+}
+
+export interface ListaPassageirosRelatorio {
+  valid_reservations: PassageiroRelatorio[];
+  waitlist_reservations: PassageiroRelatorio[];
+  route_name: string;
+  trip_id: string;
+  boarding_point: string;
+  drop_off_point: string;
+  stats: EstatisticasPassageirosRelatorio;
 }
 
 // ── Rotas ─────────────────────────────────────────────
@@ -143,6 +174,11 @@ export const adminService = {
 
   async listarViagens(): Promise<ViagemAdmin[]> {
     const response = await api.get("/trip/");
+    return response.data.data;
+  },
+
+  async listarPassageirosViagem(tripId: string): Promise<ListaPassageirosRelatorio> {
+    const response = await api.get(`/users/trip/${tripId}/subscribers`);
     return response.data.data;
   },
 
