@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, insert 
 from sqlalchemy.orm import joinedload, selectinload
 from app.models.models import Reservation
-from app.enums.enums import BoardingStatus
+from app.enums.enums import BoardingStatus, UserProfile
 from sqlmodel import select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -29,6 +29,21 @@ class ReservationRepository:
 
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def get_reservation_of_staff(self, trip_id: str):
+        stmt = (
+            select(Reservation)
+            .join(Reservation.user)
+            .where(Reservation.trip_id == trip_id)
+            .where(Reservation.boarding_confirmation != BoardingStatus.CANCELLED)
+            .where(Reservation.extra_passenger_name != None)
+            .where(User.profile == UserProfile.STAFF)  
+            .options(joinedload(Reservation.user))
+        )   
+        
+        result = await self.session.execute(stmt)
+        
+        return result.scalars().all()    
 
     async def create(self, user_id: str, trip_id: str, extra_name: str = None, boarding_status: BoardingStatus = BoardingStatus.NOT_BOARDED ):
         timestamp = datetime.now()
