@@ -18,7 +18,7 @@ from fastapi import Query
 from app.controllers.trip_controller import TripController
 
 trip_router = APIRouter(
-    #dependencies=[Depends(require_admin)]
+    dependencies=[Depends(require_admin)]
 )
 
 
