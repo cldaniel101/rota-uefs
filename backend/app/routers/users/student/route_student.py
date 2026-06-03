@@ -9,7 +9,7 @@ from app.middleware.auth_middleware import require_student
 
 
 student_router = APIRouter(
-    dependencies=[Depends(require_student)]
+    #dependencies=[Depends(require_student)]
 )
 
 async def get_user_service(session: AsyncSession = Depends(get_session)) -> UserService:
