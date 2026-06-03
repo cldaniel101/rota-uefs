@@ -18,7 +18,8 @@ from fastapi import Query
 from app.controllers.trip_controller import TripController
 
 trip_router = APIRouter(
-    dependencies=[Depends(require_admin)]
+    # remove de forma temporária para permitir acesso a usuários comuns, mas deve ser restaurada para garantir segurança --- IGNORE ---
+    # dependencies=[Depends(require_admin)] 
 )
 
 
