@@ -30,20 +30,20 @@ class ReservationRepository:
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def get_reservation_of_staff(self, trip_id: str):
-        stmt = (
-            select(Reservation)
-            .join(Reservation.user)
-            .where(Reservation.trip_id == trip_id)
-            .where(Reservation.boarding_confirmation != BoardingStatus.CANCELLED)
-            .where(Reservation.extra_passenger_name != None)
-            .where(User.profile == UserProfile.STAFF)  
-            .options(joinedload(Reservation.user))
-        )   
+    # async def get_reservation_of_staff(self, trip_id: str):
+    #     stmt = (
+    #         select(Reservation)
+    #         .join(Reservation.user)
+    #         .where(Reservation.trip_id == trip_id)
+    #         .where(Reservation.boarding_confirmation != BoardingStatus.CANCELLED)
+    #         .where(Reservation.extra_passenger_name != None)
+    #         .where(User.profile == UserProfile.STAFF)  
+    #         .options(joinedload(Reservation.user))
+    #     )   
         
-        result = await self.session.execute(stmt)
+    #     result = await self.session.execute(stmt)
         
-        return result.scalars().all()    
+    #     return result.scalars().all()    
 
     async def create(self, user_id: str, trip_id: str, extra_name: str = None, boarding_status: BoardingStatus = BoardingStatus.NOT_BOARDED ):
         timestamp = datetime.now()
