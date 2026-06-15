@@ -17,6 +17,7 @@ import { TripRouteHeader } from "@/entities/viagem/ui/TripRouteHeader";
 import { passengerService, type Home, type CardViagemFeed} from "@/services/homeService";
 import { NotificationToggle } from "@/features/gerenciar-notificacoes/ui/NotificationToggle";
 import { driverService } from "@/services/driverService";
+import { useFeedbackPopup } from "@/components/shared/feedback-popup-provider";
 
 import {
   Bus,
@@ -53,6 +54,7 @@ const mapStatus = (status?: string): "bloqueada" | "pronta" | "em_curso" | "fina
 
 function ViagemCard({ viagem }: { viagem: CardViagemFeed }) {
   const router = useRouter();
+  const { showAlert } = useFeedbackPopup();
   const [statusViagem, setStatusViagem] = useState <"bloqueada" | "pronta" | "em_curso" | "finalizada">(mapStatus(viagem.status));
 
   const handleCheckIn = () => {
@@ -66,11 +68,17 @@ function ViagemCard({ viagem }: { viagem: CardViagemFeed }) {
         if (res.success) {
           setStatusViagem("em_curso");
         } else {
-          alert("Não foi possível iniciar a viagem. Tente novamente.");
+          await showAlert({
+            variant: "error",
+            message: "Não foi possível iniciar a viagem. Tente novamente.",
+          });
         }
       } catch (error) {
         console.error("Erro ao iniciar viagem:", error);
-        alert("Erro ao iniciar viagem. Tente novamente.");
+        await showAlert({
+          variant: "error",
+          message: "Erro ao iniciar viagem. Tente novamente.",
+        });
       }
     } else if (statusViagem === "em_curso") {
       try {
@@ -78,11 +86,17 @@ function ViagemCard({ viagem }: { viagem: CardViagemFeed }) {
         if (res.success) {
           setStatusViagem("finalizada");
         } else {
-          alert("Não foi possível finalizar a viagem. Tente novamente.");
+          await showAlert({
+            variant: "error",
+            message: "Não foi possível finalizar a viagem. Tente novamente.",
+          });
         }
       } catch (error) {
         console.error("Erro ao finalizar viagem:", error);
-        alert("Erro ao finalizar viagem. Tente novamente.");
+        await showAlert({
+          variant: "error",
+          message: "Erro ao finalizar viagem. Tente novamente.",
+        });
       }
     }
   };

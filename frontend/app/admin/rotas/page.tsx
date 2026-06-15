@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminTopbar } from "@/components/admin/admin-topbar";
 import { adminService, Rota } from "@/services/adminService";
+import { useFeedbackPopup } from "@/components/shared/feedback-popup-provider";
 import { Search, MapPin, MapPinned, PencilLine, Trash2, Route } from "lucide-react";
 
 export default function AdminRotasPage() {
   const router = useRouter();
+  const { showAlert, showConfirm } = useFeedbackPopup();
 
   const [rotas, setRotas] = useState<Rota[]>([]);
   const [busca, setBusca] = useState("");
@@ -16,6 +18,19 @@ export default function AdminRotasPage() {
   const [erro, setErro] = useState("");
 
   useEffect(() => {
+    async function carregarRotas() {
+      setLoading(true);
+      setErro("");
+      try {
+        const data = await adminService.listarRotas();
+        setRotas(data);
+      } catch (e: any) {
+        setErro("Não foi possível carregar as rotas. Tente novamente.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
     carregarRotas();
   }, []);
 
@@ -24,28 +39,28 @@ export default function AdminRotasPage() {
   };
 
   const handleExcluir = async (id: string) => {
-    if (!window.confirm("Tem certeza que deseja excluir esta rota?")) return;
+    const confirmado = await showConfirm({
+      title: "Excluir rota?",
+      message: "Tem certeza que deseja excluir esta rota?",
+      confirmLabel: "EXCLUIR ROTA",
+    });
+    if (!confirmado) return;
+
     try {
       await adminService.excluirRota(id);
       setRotas((atual) => atual.filter((r) => r.route_id !== id));
-      window.alert("Rota excluída com sucesso.");
+      await showAlert({
+        variant: "success",
+        title: "Rota excluída",
+        message: "Rota excluída com sucesso.",
+      });
     } catch (e: any) {
-      window.alert("Erro ao remover a rota. Tente novamente.");
+      await showAlert({
+        variant: "error",
+        message: "Erro ao remover a rota. Tente novamente.",
+      });
     }
   };
-
-  async function carregarRotas() {
-    setLoading(true);
-    setErro("");
-    try {
-      const data = await adminService.listarRotas();
-      setRotas(data);
-    } catch (e: any) {
-      setErro("Não foi possível carregar as rotas. Tente novamente.");
-    } finally {
-      setLoading(false);
-    }
-  }
 
   const rotasFiltradas = rotas.filter(
     (r) =>

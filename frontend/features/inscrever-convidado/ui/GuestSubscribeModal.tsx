@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { TripModeToggle } from "@/entities/viagem/ui/TripModeToggle";
 import { passengerService } from "@/services/homeService";
-import { useRouter } from "next/navigation";
+import { useFeedbackPopup } from "@/components/shared/feedback-popup-provider";
 
 interface GuestSubscribeModalProps {
   viagemId: string | null;
@@ -15,7 +15,7 @@ interface GuestSubscribeModalProps {
 }
 
 export function GuestSubscribeModal({ viagemId, onClose }: GuestSubscribeModalProps) {
-  const router = useRouter();
+  const { showAlert } = useFeedbackPopup();
   const [modalidade, setModalidade] = useState<"ida" | "ida-volta">("ida");
   const [nomeConvidado, setNomeConvidado] = useState("");
   const [erro, setErro] = useState("");
@@ -33,7 +33,11 @@ export function GuestSubscribeModal({ viagemId, onClose }: GuestSubscribeModalPr
     setIsSubmitting(true);
     try {
       await passengerService.subscribeUser(viagemId, nomeConvidado);
-      alert("Convidado inscrito com sucesso!");
+      await showAlert({
+        variant: "success",
+        title: "Inscrição confirmada",
+        message: "Convidado inscrito com sucesso.",
+      });
       onClose();
       // Recarrega a página para buscar a lista de viagens atualizada
       window.location.reload();

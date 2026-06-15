@@ -7,6 +7,7 @@ import { AdminTopbar } from "@/components/admin/admin-topbar";
 import { AdminValidarProfessorList } from "@/features/validar-professor/ui/admin-validar-professor-list";
 import { ArrowLeft } from "lucide-react";
 import { api } from "@/services/api";
+import { useFeedbackPopup } from "@/components/shared/feedback-popup-provider";
 
 interface Servidor {
   user_id: string;
@@ -21,6 +22,7 @@ interface Servidor {
 
 export default function AdminValidarProfessorPage() {
   const router = useRouter();
+  const { showAlert, showConfirm } = useFeedbackPopup();
 
   const [servidores, setServidores] = useState<Servidor[]>([]);
   const [busca, setBusca] = useState("");
@@ -46,26 +48,45 @@ export default function AdminValidarProfessorPage() {
   }
 
   async function handleAprovar(servidor: Servidor) {
-    if (!confirm(`Aprovar o cadastro de "${servidor.full_name}"?`)) return;
+    const confirmado = await showConfirm({
+      variant: "success",
+      title: "Aprovar cadastro?",
+      message: `Aprovar o cadastro de "${servidor.full_name}"?`,
+      confirmLabel: "APROVAR",
+    });
+    if (!confirmado) return;
+
     setProcessando(servidor.user_id);
     try {
       await api.patch(`/users/staff/accept/${servidor.user_id}`);
       setServidores((prev) => prev.filter((s) => s.user_id !== servidor.user_id));
     } catch {
-      alert("Erro ao aprovar. Tente novamente.");
+      await showAlert({
+        variant: "error",
+        message: "Erro ao aprovar. Tente novamente.",
+      });
     } finally {
       setProcessando(null);
     }
   }
 
   async function handleRejeitar(servidor: Servidor) {
-    if (!confirm(`Rejeitar e remover o cadastro de "${servidor.full_name}"?`)) return;
+    const confirmado = await showConfirm({
+      title: "Rejeitar cadastro?",
+      message: `Rejeitar e remover o cadastro de "${servidor.full_name}"?`,
+      confirmLabel: "REJEITAR",
+    });
+    if (!confirmado) return;
+
     setProcessando(servidor.user_id);
     try {
       await api.patch(`/users/staff/reject/${servidor.user_id}`);
       setServidores((prev) => prev.filter((s) => s.user_id !== servidor.user_id));
     } catch {
-      alert("Erro ao rejeitar. Tente novamente.");
+      await showAlert({
+        variant: "error",
+        message: "Erro ao rejeitar. Tente novamente.",
+      });
     } finally {
       setProcessando(null);
     }

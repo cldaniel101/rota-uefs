@@ -6,9 +6,11 @@ import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminTopbar } from "@/components/admin/admin-topbar";
 import { AdminMotoristasList } from "@/features/gerenciar-motoristas/ui/admin-motoristas-list";
 import { adminService, type Motorista } from "@/services/adminService";
+import { useFeedbackPopup } from "@/components/shared/feedback-popup-provider";
 
 export default function AdminMotoristasPage() {
   const router = useRouter();
+  const { showAlert, showConfirm } = useFeedbackPopup();
   const [motoristas, setMotoristas] = useState<Motorista[]>([]);
   const [loading, setLoading] = useState(true);
   const [busca, setBusca] = useState("");
@@ -33,13 +35,26 @@ export default function AdminMotoristasPage() {
   };
 
   const handleExcluir = async (id: string) => {
-    if (!window.confirm("Tem certeza que deseja excluir este motorista?")) return;
+    const confirmado = await showConfirm({
+      title: "Excluir motorista?",
+      message: "Tem certeza que deseja excluir este motorista?",
+      confirmLabel: "EXCLUIR MOTORISTA",
+    });
+    if (!confirmado) return;
+
     try {
       await adminService.excluirMotorista(id);
       setMotoristas((atual) => atual.filter((m) => m.user_id !== id));
-      window.alert("Motorista excluído com sucesso.");
+      await showAlert({
+        variant: "success",
+        title: "Motorista excluído",
+        message: "Motorista excluído com sucesso.",
+      });
     } catch (e: any) {
-      window.alert("Erro ao remover o motorista. Tente novamente.");
+      await showAlert({
+        variant: "error",
+        message: "Erro ao remover o motorista. Tente novamente.",
+      });
     }
   };
 

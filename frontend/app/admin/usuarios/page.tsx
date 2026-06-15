@@ -6,9 +6,11 @@ import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminTopbar } from "@/components/admin/admin-topbar";
 import { AdminUsuariosList } from "@/features/gerenciar-usuarios/ui/admin-usuarios-list";
 import { adminService, Administrador } from "@/services/adminService";
+import { useFeedbackPopup } from "@/components/shared/feedback-popup-provider";
 
 export default function AdminUsuariosPage() {
   const router = useRouter();
+  const { showAlert, showConfirm } = useFeedbackPopup();
 
   const [admins, setAdmins] = useState<Administrador[]>([]);
   const [busca, setBusca] = useState("");
@@ -34,13 +36,22 @@ export default function AdminUsuariosPage() {
   }
 
   async function handleExcluir(admin: Administrador) {
-    if (!confirm(`Tem certeza que deseja excluir "${admin.full_name}"?`)) return;
+    const confirmado = await showConfirm({
+      title: "Excluir administrador?",
+      message: `Tem certeza que deseja excluir "${admin.full_name}"?`,
+      confirmLabel: "EXCLUIR",
+    });
+    if (!confirmado) return;
+
     setExcluindo(admin.admin_id);
     try {
       await adminService.excluirAdmin(admin.admin_id);
       setAdmins((prev) => prev.filter((a) => a.admin_id !== admin.admin_id));
     } catch (e: any) {
-      alert("Erro ao excluir administrador. Tente novamente.");
+      await showAlert({
+        variant: "error",
+        message: "Erro ao excluir administrador. Tente novamente.",
+      });
     } finally {
       setExcluindo(null);
     }

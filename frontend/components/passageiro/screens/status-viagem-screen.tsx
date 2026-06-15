@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { passengerService } from "@/services/homeService";
 import { userService } from "@/services/userService";
 import { Navigation } from "@/components/landing/navigation";
+import { useFeedbackPopup } from "@/components/shared/feedback-popup-provider";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,14 +24,14 @@ import {
 export function StatusViagemScreen() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const viagemId = searchParams.get("viagemId");
+  const { showAlert, showConfirm } = useFeedbackPopup();
 
   const [viagemInscrita, setViagemInscrita] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchTrip() {
-      const viagemId = searchParams.get("viagemId");
-
       if (!viagemId) {
         setIsLoading(false);
         return;
@@ -107,7 +108,7 @@ export function StatusViagemScreen() {
     }
 
     fetchTrip();
-  }, []);
+  }, [viagemId]);
 
   if (isLoading) {
     return (
@@ -127,6 +128,34 @@ export function StatusViagemScreen() {
       </div>
     );
   }
+
+  const handleCancelarInscricao = async () => {
+    const confirmado = await showConfirm({
+      title: "Cancelar inscrição?",
+      message: "Tem certeza que deseja cancelar sua vaga?",
+      confirmLabel: "CANCELAR INSCRIÇÃO",
+    });
+
+    if (!confirmado) return;
+
+    try {
+      if (viagemInscrita.reservationId) {
+        await passengerService.cancelSubscription(viagemInscrita.reservationId);
+        router.push("/passageiro");
+      } else {
+        await showAlert({
+          variant: "error",
+          message: "Não foi possível encontrar o ID da sua reserva.",
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao cancelar vaga:", error);
+      await showAlert({
+        variant: "error",
+        message: "Ocorreu um erro ao cancelar a reserva.",
+      });
+    }
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-[#E4F2F1]">
@@ -224,7 +253,7 @@ export function StatusViagemScreen() {
               <div className="w-full h-px bg-slate-100 mb-2" />
 
               <Button
-                onClick={() => router.push(`/passageiro/validar?trip_id=${searchParams.get("viagemId")}`)}
+                onClick={() => router.push(`/passageiro/validar?trip_id=${viagemId}`)}
                 className="w-full h-16 bg-[#103173] hover:bg-[#103B73] text-white font-black text-lg rounded-2xl shadow-lg transition-all active:scale-95 flex items-center gap-3"
               >
                 <QrCode className="h-6 w-6 text-[#F2D022]" />
@@ -233,21 +262,7 @@ export function StatusViagemScreen() {
 
               <Button
                 variant="ghost"
-                onClick={async () => {
-                  if (confirm("Tem certeza que deseja cancelar sua vaga?")) {
-                    try {
-                      if (viagemInscrita.reservationId) {
-                        await passengerService.cancelSubscription(viagemInscrita.reservationId);
-                        router.push("/passageiro");
-                      } else {
-                        alert("Não foi possível encontrar o ID da sua reserva.");
-                      }
-                    } catch (error) {
-                      console.error("Erro ao cancelar vaga:", error);
-                      alert("Ocorreu um erro ao cancelar a reserva.");
-                    }
-                  }
-                }}
+                onClick={handleCancelarInscricao}
                 className="text-red-500 font-bold hover:text-red-600 hover:bg-red-50"
               >
                 CANCELAR MINHA INSCRIÇÃO

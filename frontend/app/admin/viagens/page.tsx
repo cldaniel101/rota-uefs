@@ -7,6 +7,7 @@ import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminTopbar } from "@/components/admin/admin-topbar";
 import { AdminViagensList, type ViagemTela } from "@/features/gerenciar-viagens/ui/admin-viagens-list";
 import { adminService } from "@/services/adminService";
+import { useFeedbackPopup } from "@/components/shared/feedback-popup-provider";
 
 const tradutorStatus: Record<string, string> = {
   "Pending": "Pendente",
@@ -17,6 +18,7 @@ const tradutorStatus: Record<string, string> = {
 
 export default function AdminViagensPage() {
   const router = useRouter();
+  const { showAlert, showConfirm } = useFeedbackPopup();
   const [viagens, setViagens] = useState<ViagemTela[]>([]);
   
   const [loading, setLoading] = useState(true);
@@ -26,15 +28,26 @@ export default function AdminViagensPage() {
   const [statusFilter, setStatusFilter] = useState<string>("Todos");
 
   const handleExcluir = async (id: string) => {
-    const confirmado = window.confirm("Tem certeza que deseja excluir esta viagem?");
+    const confirmado = await showConfirm({
+      title: "Excluir viagem?",
+      message: "Tem certeza que deseja excluir esta viagem?",
+      confirmLabel: "EXCLUIR VIAGEM",
+    });
     if (!confirmado) return;
 
     try {
       await adminService.excluirViagem(id);
       setViagens((atual) => atual.filter((v) => v.trip_id !== id));
-      window.alert("Viagem excluída com sucesso.");
+      await showAlert({
+        variant: "success",
+        title: "Viagem excluída",
+        message: "Viagem excluída com sucesso.",
+      });
     } catch (err) {
-      window.alert("Erro ao remover a viagem. Tente novamente.");
+      await showAlert({
+        variant: "error",
+        message: "Erro ao remover a viagem. Tente novamente.",
+      });
     }
   };
 

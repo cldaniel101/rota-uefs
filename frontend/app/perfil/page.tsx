@@ -40,6 +40,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { userService } from "@/services/userService";
+import { useFeedbackPopup } from "@/components/shared/feedback-popup-provider";
 
 // --- Tipos ---
 
@@ -66,6 +67,7 @@ interface PasswordUpdateDTO {
 
 function PerfilContent() {
   const router = useRouter();
+  const { showAlert } = useFeedbackPopup();
 
   const [usuario, setUsuario] = useState<UserProfile | null>(null);
   const [carregando, setCarregando] = useState(true);
@@ -91,7 +93,7 @@ function PerfilContent() {
       })
       .catch(() => router.push("/login"))
       .finally(() => setCarregando(false));
-  }, []);
+  }, [router]);
 
   // Limpa a mensagem de erro/alerta automaticamente após 5 segundos
   useEffect(() => {
@@ -205,10 +207,12 @@ function PerfilContent() {
     try {
       await userService.deleteAccount();
       localStorage.removeItem("token");
-      //alert("Conta excluída com sucesso.");
       router.push("/");
     } catch {
-      //alert("Erro ao excluir conta. Tente novamente.");
+      await showAlert({
+        variant: "error",
+        message: "Erro ao excluir conta. Tente novamente.",
+      });
     } finally {
       setIsDeleting(false);
       setShowDeleteModal(false);

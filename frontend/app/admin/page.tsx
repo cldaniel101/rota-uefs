@@ -9,9 +9,11 @@ import { AdminTopbar } from "@/components/admin/admin-topbar";
 import { AdminMetrics } from "@/features/gerenciar-frota/ui/admin-metrics";
 import { AdminFleetList, type FiltroStatus } from "@/features/gerenciar-frota/ui/admin-fleet-list";
 import { adminService, type HomeAdmin, type BusHomeAdmin } from "@/services/adminService";
+import { useFeedbackPopup } from "@/components/shared/feedback-popup-provider";
 
 export default function PaginaAdmin() {
   const router = useRouter();
+  const { showAlert, showConfirm } = useFeedbackPopup();
   const [homeData, setHomeData] = useState<HomeAdmin | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -61,13 +63,19 @@ export default function PaginaAdmin() {
 
   const handleRemover = async (onibus: BusHomeAdmin) => {
   if (onibus.status === "Active" && onibus.trips_today > 0) {
-    window.alert(
-      `O ônibus ${onibus.plate} está com viagens em andamento/programadas hoje. Realoque as rotas antes de remover.`,
-    );
+    await showAlert({
+      variant: "warning",
+      title: "Ônibus em uso",
+      message: `O ônibus ${onibus.plate} está com viagens em andamento/programadas hoje. Realoque as rotas antes de remover.`,
+    });
     return;
   }
 
-  const confirmado = window.confirm(`Remover o ônibus ${onibus.plate} do sistema?`);
+  const confirmado = await showConfirm({
+    title: "Remover ônibus?",
+    message: `Remover o ônibus ${onibus.plate} do sistema?`,
+    confirmLabel: "REMOVER ÔNIBUS",
+  });
   if (!confirmado) return;
 
   try {
@@ -87,7 +95,10 @@ export default function PaginaAdmin() {
       };
     });
   } catch (err) {
-    window.alert(`Erro ao remover o ônibus ${onibus.plate}. Tente novamente.`);
+    await showAlert({
+      variant: "error",
+      message: `Erro ao remover o ônibus ${onibus.plate}. Tente novamente.`,
+    });
   }
 };
 

@@ -1,6 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import ToastProvider from "@/components/ToastProvider";
+import { FeedbackPopupProvider } from "@/components/shared/feedback-popup-provider";
 import {
   Instrument_Sans,
   Instrument_Serif,
@@ -49,9 +50,11 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ToastProvider>
-          {children}
-          <FooterSection />
-          <Analytics />
+          <FeedbackPopupProvider>
+            {children}
+            <FooterSection />
+            <Analytics />
+          </FeedbackPopupProvider>
         </ToastProvider>
       </body>
     </html>
